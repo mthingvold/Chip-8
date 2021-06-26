@@ -6,6 +6,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 #include <map>
+#include <limits.h>
 using namespace std;
 
 class chip8 {
@@ -32,7 +33,10 @@ class chip8 {
     }
 
     uint16_t next_instruction(){
-        return 0;
+        int big = memory[pc % 4096];
+        int little = memory[(pc+1)%4096];
+        pc = pc + 2;
+        return (big << 8)+ little;
     }
 
     void exec(uint16_t instruction){
@@ -43,7 +47,49 @@ class chip8 {
         int nnn = instruction & 0x0FFF;
         int nn = instruction & 0x00FF;
         int n = instruction & 0x000F;
-    }
+
+
+        switch (l)
+        {
+        case 0x00:
+            if (x==0x00 && y == 0x0E){
+                if (n==0x00){clear();}
+                else if (n==0x0E){ret();}
+            }
+            /* code */
+            break;
+        case 0x01:
+            jump(nnn);
+            break;
+        case 0x02:
+            call(nnn);
+            break;
+        case 0x03:
+            if (v[x] == nn) {skip();}
+            break;
+        case 0x04:
+            if (v[x] != nn) {skip();}
+            break;
+        case 0x05:
+            if (v[x] == v[y]) {skip();}
+            break;
+        case 0x06:
+            v[x] = nn;
+            break;
+        case 0x07:
+            v[x] = (v[x] + nn) % INT8_MAX;
+            break;
+        case 0x08:
+            
+            opcodes0x08(x,y,n);
+            break;
+
+        default:
+            throw(l);
+            break;
+        }
+    }    
+
     private:
     void jump(uint16_t instruction){
         pc = instruction;
@@ -58,13 +104,53 @@ class chip8 {
         pc = stack.back();
         stack.pop_back();
     }
+    void clear(){
+        cout << "\033[2J\033[1;1H";
+        //TODO add the display related code
+    }
+    void skip(){
+        pc = pc + 2;
+    }
+
+    void opcodes0x08(int x, int y, int n){
+        switch (n){
+            case 0:
+            v[x] = v[y];
+            break;
+            case 1:
+            v[x] |= v[y];
+            break;
+            case 2:
+            v[x] &= v[y];
+            break;
+            case 3:
+            v[x] ^= v[y];
+            break;
+            case 4:
+            if (v[x] > UINT8_MAX - v[y]){v[0x0F] = 1;} else{v[0x0F] = 0;}
+            v[x] = (v[x] + v[y]) % UINT8_MAX;
+            break;
+            case 5:
+            if (0 > UINT8_MAX - (v[x]+v[y])){v[0x0f] = true;}else{v[0x0f] = false;}
+            v[x] = v[x] - v[y];
+            break;
+            case 6:
+            v[0x0f] = v[x] & 0x01;
+            v[x] >>= 1;
+            break;
+            case 7:
+            //TODO Keep implementing these
+            break;
+        }
+    }
+
  
 };
 
 int main(){
-    cout << "HELLO \n Enter a name: " << endl;
+    chip8 chip = chip8();
     string name;
-    cin >> name;
-    cout << name << endl;
+    cout << "TESTSSS" << endl;
+
     return 0;
 }

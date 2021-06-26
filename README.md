@@ -1,2 +1,10 @@
 # Chip-8
-A chip 8 implementation to practice my Python and C++ skills
+Another chip 8 implementation at first written in C++
+
+## Description
+
+## Running
+```shell
+make
+./chip8
+```
