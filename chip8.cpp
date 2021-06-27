@@ -83,7 +83,7 @@ class chip8 {
             
             opcodes0x08(x,y,n);
             break;
-
+        
         default:
             throw(l);
             break;
@@ -139,7 +139,16 @@ class chip8 {
             v[x] >>= 1;
             break;
             case 7:
-            //TODO Keep implementing these
+            v[x] = y - x;
+            v[0x0F] = v[x] > y;
+            break;
+
+            case 0x0E:
+            v[0x0F] = (v[x] & 0x80)>> 7;
+            v[x] <<= 1;
+            break;
+            default:
+            cout << "ERRRORRRRR" << endl;
             break;
         }
     }
@@ -150,6 +159,12 @@ class chip8 {
 int main(){
     chip8 chip = chip8();
     string name;
+    uint8_t a, b;
+    a= 2;
+    b=3;
+    a = a-b;
+    cout << "a: " << +a << endl;
+    cout << UINT_MAX;
     cout << "TESTSSS" << endl;
 
     return 0;
