@@ -83,7 +83,18 @@ class chip8 {
             
             opcodes0x08(x,y,n);
             break;
-        
+        case 0x0A:
+            i = nnn;
+            break;
+        case 0x0B:
+            jump(nnn + v[0]);
+            break;
+        case 0x0C:
+            v[x] = (rand() % 0xFF) & nn;
+            break;
+        case 0x0D:
+            opcodes0x0D(x,y,n);
+            break;
         default:
             throw(l);
             break;
@@ -151,6 +162,9 @@ class chip8 {
             cout << "ERRRORRRRR" << endl;
             break;
         }
+    }
+    void opcodes0x0D(int x, int y, int n){
+        //TODO Implement this
     }
 
  
