@@ -9,6 +9,8 @@
 #include <limits.h>
 using namespace std;
 
+const int DISPLAY_HEIGHT = 64;
+const int DISPLAY_WIDTH = 32;
 class chip8 {
     public:
     uint8_t v[16];
@@ -95,6 +97,10 @@ class chip8 {
         case 0x0D:
             opcodes0x0D(x,y,n);
             break;
+
+        case 0x0E:
+            //TODO
+            break;
         default:
             throw(l);
             break;
@@ -164,9 +170,30 @@ class chip8 {
         }
     }
     void opcodes0x0D(int x, int y, int n){
-        //TODO Implement this
+        v[0x0F] = 0;
+
+        for(int row = 0; row< n; row++){
+            unsigned int py = ((v[y] + row) % (uint8_t)DISPLAY_HEIGHT);
+            unsigned int sprite_row = memory[i + row];
+
+            for(int col = 0; col < 8; col++){
+                unsigned int px = (v[x]+col) % DISPLAY_WIDTH;
+                uint8_t on = (sprite_row & (0x80 >> col)) > 0;
+                if(!display_ram[py][px]^on){
+                    v[0x0F] = 1;
+                
+                }
+                display_ram[py][px]^=on;
+            }
+        }
+
+        draw_screen();
     }
 
+
+    void draw_screen(){
+
+    }
  
 };
 
